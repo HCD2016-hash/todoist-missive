@@ -636,6 +636,8 @@
       border: none;
       width: 100%;
       resize: none;
+      min-height: 28px;
+      overflow: hidden;
     }
 
     .detail-title-input:focus {
@@ -646,14 +648,22 @@
       width: 100%;
       font-size: 13px;
       color: var(--text-secondary);
-      background: transparent;
-      border: none;
-      resize: none;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 12px;
+      resize: vertical;
       margin-bottom: 16px;
+      min-height: 80px;
+      max-height: 300px;
+      overflow-y: auto;
+      word-break: break-word;
+      line-height: 1.6;
     }
 
     .detail-description-input:focus {
       outline: none;
+      border-color: var(--accent);
     }
 
     .detail-meta-section {
@@ -1701,6 +1711,25 @@
       div.textContent = str || '';
       return div.innerHTML;
     }
+
+    // Auto-resize textareas
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 300) + 'px';
+    }
+
+    $('detail-title').addEventListener('input', function() { autoResize(this); });
+    $('detail-description').addEventListener('input', function() { autoResize(this); });
+
+    // Resize on open
+    const origOpenDetail = openTaskDetail;
+    openTaskDetail = async function(taskId) {
+      await origOpenDetail(taskId);
+      setTimeout(() => {
+        autoResize($('detail-title'));
+        autoResize($('detail-description'));
+      }, 10);
+    };
 
     // Auto-refresh
     setInterval(() => {
